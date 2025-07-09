@@ -25,10 +25,11 @@ router.post('/create-order', async (req, res) => {
     }
 
     const options = {
-      amount, // already in paise
-      currency: 'INR',
-      receipt: `receipt_${itemId}_${Date.now()}`,
-    };
+  amount, // already in paise
+  currency: 'INR',
+  receipt: `rcpt_${Date.now()}`, // ✅ shortened to valid format
+};
+
 
     const order = await razorpay.orders.create(options);
     res.status(200).json({ orderId: order.id, amount, currency: 'INR' });
