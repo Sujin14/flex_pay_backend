@@ -23,7 +23,7 @@ router.post('/create-order', async (req, res) => {
       return res.status(404).json({ error: 'Item not found' });
     }
     const options = {
-      amount: amount * 100,
+      amount, // already in paise
       currency: 'INR',
       receipt: `receipt_${itemId}_${Date.now()}`,
     };
@@ -49,15 +49,15 @@ router.post('/verify', async (req, res) => {
       return res.status(400).json({ error: 'Invalid payment signature' });
     }
 
-    // Verify item exists
     const upload = await Upload.findById(itemId);
     if (!upload) {
       return res.status(404).json({ error: 'Item not found' });
     }
 
-    // Save payment
+    const amountInINR = amount / 100; // ✅ convert paise to INR
+
     const payment = new Payment({
-      amount: amount / 100, // Convert paise to INR
+      amount: amountInINR,
       paymentId,
       orderId,
       signature,
@@ -67,8 +67,8 @@ router.post('/verify', async (req, res) => {
     });
     await payment.save();
 
-    // Update donation stats in Upload
-    upload.totalDonated += amount / 100; // Convert paise to INR
+    // ✅ Update donation stats
+    upload.totalDonated += amountInINR;
     upload.donorCount += 1;
     await upload.save();
 
