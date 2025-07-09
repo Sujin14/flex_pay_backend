@@ -33,6 +33,8 @@ router.post('/create-order', async (req, res) => {
     const order = await razorpay.orders.create(options);
     res.status(200).json({ orderId: order.id, amount, currency: 'INR' });
   } catch (err) {
+    console.log("✅ Razorpay ID:", process.env.RAZORPAY_KEY_ID);
+    console.log("✅ Razorpay Secret:", process.env.RAZORPAY_KEY_SECRET);
     console.error('Razorpay order creation failed:', err);
     res.status(500).json({
       error: `Failed to create order: ${err?.error?.description || err.message || 'Unknown error'}`,
