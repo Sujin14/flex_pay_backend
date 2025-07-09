@@ -8,7 +8,7 @@ const paymentSchema = new mongoose.Schema({
   email: String,
   contact: String,
   itemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Upload' }, // Link to Upload
-  date: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }, // ✅ renamed for clarity and consistency
 });
 
 module.exports = mongoose.model('Payment', paymentSchema);

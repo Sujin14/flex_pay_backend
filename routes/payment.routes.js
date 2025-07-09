@@ -93,7 +93,7 @@ router.get('/history', async (req, res) => {
   try {
     const payments = await Payment.find()
       .populate('itemId', 'title')
-      .sort({ date: -1 });
+      .sort({ createdAt: -1 });
     res.status(200).json(payments);
   } catch (err) {
     res.status(500).json({ error: `Failed to fetch payments: ${err.message}` });
