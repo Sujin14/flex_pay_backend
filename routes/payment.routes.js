@@ -17,20 +17,26 @@ router.post('/create-order', async (req, res) => {
   if (!amount || !itemId) {
     return res.status(400).json({ error: 'Amount and itemId are required' });
   }
+
   try {
     const upload = await Upload.findById(itemId);
     if (!upload) {
       return res.status(404).json({ error: 'Item not found' });
     }
+
     const options = {
       amount, // already in paise
       currency: 'INR',
       receipt: `receipt_${itemId}_${Date.now()}`,
     };
+
     const order = await razorpay.orders.create(options);
     res.status(200).json({ orderId: order.id, amount, currency: 'INR' });
   } catch (err) {
-    res.status(500).json({ error: `Failed to create order: ${err.message}` });
+    console.error('Razorpay order creation failed:', err);
+    res.status(500).json({
+      error: `Failed to create order: ${err?.error?.description || err.message || 'Unknown error'}`,
+    });
   }
 });
 
@@ -65,6 +71,7 @@ router.post('/verify', async (req, res) => {
       contact,
       itemId,
     });
+
     await payment.save();
 
     // ✅ Update donation stats
